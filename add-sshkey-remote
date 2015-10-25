@@ -1,11 +1,11 @@
 #!/bin/bash
 # usage
-cmdname=`basename $0`
+cmdname="$(basename "$0")"
 function usage()
 {
-	cat <<EOF
+    cat <<EOF
 Usage:
-    $(basename ${0}) [command] [args]
+    $cmdname [command] [args]
 
 Command:
     ssh [user@]hostname       adding ssh keys to authorized_keys on remote host
@@ -16,30 +16,39 @@ EOF
 }
 
 key_path=~/.ssh/id_rsa.pub
-key_data=`cat ${key_path}`
-host=${2}
-user=${2}
-label=${3:-`hostname`}
+key_data="$(cat $key_path)"
+host="$2"
+user="$2"
+label="${3:-$(hostname)}"
 
-case ${1} in
-	ssh)
-		cat ${key_path} | ssh ${host} "cat >> ~/.ssh/authorized_keys"
-		;;
+case "$1" in
+    ssh)
+        cat <"$key_path" | ssh "$host" "cat >> ~/.ssh/authorized_keys"
+        ;;
 
-	github)
-		curl -u "${user}" \
-			 --data "{\"title\":\"${label}\",\"key\":\"${key_data}\"}" \
-			 https://api.github.com/user/keys
-		;;
+    github)
+        res="$(
+        curl -u "$user" \
+            --data "{\"title\":\"$label\",\"key\":\"$key_data\"}" \
+            https://api.github.com/user/keys
+        )"
+        ;;
 
-	bitbucket)
-		curl -u "${user}" \
-			 --data "label=${lavel}" --data-urlencode "key=${key_data}" \
-			 https://bitbucket.org/api/1.0/users/${user}/ssh-keys
-		;;
+    bitbucket)
+        res="$(
+        curl -u "$user" \
+            --data "label=$label" --data-urlencode "key=$key_data" \
+            https://bitbucket.org/api/1.0/users/"$user"/ssh-keys
+        )"
+        ;;
 
-	*)
-		usage
-		exit 1
-		;;
+    *)
+        usage
+        exit 1
+        ;;
 esac
+
+if grep "Bad" <<<"$res" 2>&1 | perl -pe 's/^.*"(Bad.*?)".*$/$1/'; then
+    echo "sorry, try again" 1>&2
+    exit 1
+fi
