@@ -27,15 +27,19 @@ case "$1" in
         ;;
 
     github)
+        res="$(
         curl -u "$user" \
             --data "{\"title\":\"$label\",\"key\":\"$key_data\"}" \
             https://api.github.com/user/keys
+        )"
         ;;
 
     bitbucket)
+        res="$(
         curl -u "$user" \
             --data "label=$label" --data-urlencode "key=$key_data" \
             https://bitbucket.org/api/1.0/users/"$user"/ssh-keys
+        )"
         ;;
 
     *)
@@ -43,3 +47,8 @@ case "$1" in
         exit 1
         ;;
 esac
+
+if grep "Bad" <<<"$res" 2>&1 | perl -pe 's/^.*"(Bad.*?)".*$/$1/'; then
+    echo "sorry, try again" 1>&2
+    exit 1
+fi
