@@ -8,27 +8,51 @@ Usage:
     $cmdname [command] [args]
 
 Command:
-    ssh [user@]hostname       adding ssh keys to authorized_keys on remote host
-    github user [label]       adding ssh keys to github
-    bitbucket user [label]    adding ssh keys to bitbucket
-    help                      print this
+    ssh [user@]<hostname> [-p|--path <path>]                   adding ssh keys to authorized_keys on remote host
+    github <user> [-l|--label <label>] [-p|--path <path>]      adding ssh keys to github
+    bitbucket <user> [-l|--label <label>] [-p|--path <path>]   adding ssh keys to bitbucket
 EOF
 }
 
-key_path=~/.ssh/id_rsa.pub
-key_data="$(cat $key_path)"
-host="$2"
-user="$2"
-label="${3:-$(hostname)}"
 
-case "$1" in
+curl="curl -s -w \n%{http_code}"
+command="$1"
+shift
+host="$1"
+user="$1"
+shift
+
+key_path=~/.ssh/id_rsa.pub
+
+label="$(hostname)"
+
+
+
+
+while (( $# > 0 ))
+do
+    case "$1" in
+        '-l'|'--label')
+            label="$2"
+            shift 2
+            ;;
+        '-p'|'--path')
+            key_path="$2"
+            shift 2
+            ;;
+    esac
+done
+
+key_data="$(cat $key_path)"
+
+case "$command" in
     ssh)
         cat <"$key_path" | ssh "$host" "cat >> ~/.ssh/authorized_keys"
         ;;
 
     github)
         res="$(
-        curl -u "$user" \
+        $curl -u "$user" \
             --data "{\"title\":\"$label\",\"key\":\"$key_data\"}" \
             https://api.github.com/user/keys
         )"
@@ -36,7 +60,7 @@ case "$1" in
 
     bitbucket)
         res="$(
-        curl -u "$user" \
+        $curl -u "$user" \
             --data "label=$label" --data-urlencode "key=$key_data" \
             https://bitbucket.org/api/1.0/users/"$user"/ssh-keys
         )"
@@ -48,7 +72,13 @@ case "$1" in
         ;;
 esac
 
-if grep "Bad" <<<"$res" 2>&1 | perl -pe 's/^.*"(Bad.*?)".*$/$1/'; then
-    echo "sorry, try again" 1>&2
+status="$(tail -n 1 <<<"$res")"
+
+if grep "^2..$" <<<"$status" 2>&1 > /dev/null; then
+    echo "success"
+    exit 0
+else
+    echo "error"
+    echo "$res"
     exit 1
 fi
