@@ -48,6 +48,7 @@ key_data="$(cat $key_path)"
 case "$command" in
     ssh)
         cat <"$key_path" | ssh "$host" "cat >> ~/.ssh/authorized_keys"
+        exit $?
         ;;
 
     github)
