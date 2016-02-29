@@ -14,16 +14,15 @@ Usage:
     add-sshkey-remote [command] [args]
 
 Command:
-    ssh [user@]hostname       adding ssh keys to authorized_keys on remote host
-    github user [label]       adding ssh keys to github
-    bitbucket user [label]    adding ssh keys to bitbucket
-    help                      print this
+    ssh [user@]<hostname> [-p|--path <path>]                   adding ssh keys to authorized_keys on remote host
+    github <user> [-l|--label <label>] [-p|--path <path>]      adding ssh keys to github
+    bitbucket <user> [-l|--label <label>] [-p|--path <path>]   adding ssh keys to bitbucket
 ```
 
 Example:
 
 ```
-$ ./add-sshkey-remote github ABCanG MainPC
+$ ./add-sshkey-remote github ABCanG -l MainPC -p ~/.ssh/id_rsa.pub
 ```
 
 ## Known Issue
