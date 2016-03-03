@@ -25,6 +25,11 @@ Example:
 $ ./add-sshkey-remote github ABCanG -l MainPC -p ~/.ssh/id_rsa.pub
 ```
 
+Use with curl:
+```
+$ curl -fsSL https://raw.githubusercontent.com/ABCanG/add-sshkey-remote/master/add-sshkey-remote | sh -s github ABCanG
+```
+
 ## Known Issue
 * Raw response is displayed after command execution.
 
