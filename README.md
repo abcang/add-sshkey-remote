@@ -37,7 +37,7 @@ $ ./add-sshkey-remote gitlab ABCanG --url https://gitlab.mydomain.com
 
 Use with curl:
 ```
-$ curl -fsSL https://raw.githubusercontent.com/ABCanG/add-sshkey-remote/master/add-sshkey-remote | sh -s github ABCanG
+$ curl -fsSL https://raw.githubusercontent.com/ABCanG/add-sshkey-remote/master/add-sshkey-remote | bash -s github ABCanG
 ```
 
 
