@@ -18,10 +18,10 @@ Usage:
     add-sshkey-remote [command] [args]
 
 Command:
-ssh [user@]<hostname> [-p|--path <path>]                                     adding ssh keys to authorized_keys on remote host
-github <user> [-l|--label <label>] [-p|--path <path>]                        adding ssh keys to github
-bitbucket <user> [-l|--label <label>] [-p|--path <path>]                     adding ssh keys to bitbucket
-gitlab <user> [-l|--label <label>] [-p|--path <path>] [-u|--url <baseurl>]   adding ssh keys to gitlab
+ssh [user@]<hostname> [-p|--path <path>]                                        adding ssh keys to authorized_keys on remote host
+github <user> [-l|--label <label>] [-p|--path <path>]                           adding ssh keys to github
+bitbucket <user> [-l|--label <label>] [-p|--path <path>]                        adding ssh keys to bitbucket
+gitlab <user> [-l|--label <label>] [-p|--path <path>] [-u|--url <gitlab_url>]   adding ssh keys to gitlab
 ```
 
 Example:
@@ -39,10 +39,6 @@ Use with curl:
 ```
 $ curl -fsSL https://raw.githubusercontent.com/ABCanG/add-sshkey-remote/master/add-sshkey-remote | bash -s github ABCanG
 ```
-
-
-## Known Issue
-* Raw response is displayed after command execution.
 
 ## License
 MIT License

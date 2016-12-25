@@ -8,10 +8,10 @@ Usage:
     $cmdname [command] [args]
 
 Command:
-    ssh [user@]<hostname> [-p|--path <path>]                                     adding ssh keys to authorized_keys on remote host
-    github <user> [-l|--label <label>] [-p|--path <path>]                        adding ssh keys to github
-    bitbucket <user> [-l|--label <label>] [-p|--path <path>]                     adding ssh keys to bitbucket
-    gitlab <user> [-l|--label <label>] [-p|--path <path>] [-u|--url <baseurl>]   adding ssh keys to gitlab
+    ssh [user@]<hostname> [-p|--path <path>]                                        adding ssh keys to authorized_keys on remote host
+    github <user> [-l|--label <label>] [-p|--path <path>]                           adding ssh keys to github
+    bitbucket <user> [-l|--label <label>] [-p|--path <path>]                        adding ssh keys to bitbucket
+    gitlab <user> [-l|--label <label>] [-p|--path <path>] [-u|--url <gitlab_url>]   adding ssh keys to gitlab
 EOF
 }
 
@@ -26,7 +26,7 @@ shift
 key_path=~/.ssh/id_rsa.pub
 
 label="$(hostname)"
-baseurl=""
+gitlab_url="https://gitlab.com"
 
 while (( $# > 0 ))
 do
@@ -40,7 +40,7 @@ do
             shift 2
             ;;
         '-u'|'--url')
-            baseurl="$2"
+            gitlab_url="$2"
             shift 2
             ;;
     esac
@@ -74,18 +74,13 @@ case "$command" in
         read -sp "Password: " pass
         echo ""
 
-        if [ -z $baseurl ]; then
-            echo "URL is not specified"
-            exit 1
+        if ! grep "^https\?://" <<<"$gitlab_url" 2>&1 > /dev/null; then
+            gitlab_url="https://$gitlab_url"
         fi
-
-        if ! grep "^https\?://" <<<"$baseurl" 2>&1 > /dev/null; then
-            baseurl="https://$baseurl"
-        fi
-        token="$($curl -k $baseurl/api/v3/session --data-urlencode "login=$user" --data-urlencode "password=$pass" | \
-            awk -F',' '/"private_token"/{print $NF}' | awk -F':' '{print $2}' | sed s/[^0-9a-zA-Z]//g)"
+        token="$($curl -k $gitlab_url/api/v3/session --data-urlencode "login=$user" --data-urlencode "password=$pass" | \
+            awk -F',' '/"private_token"/{print $NF}' | awk -F':' '{print $2}' | sed s/[^0-9a-zA-Z-]//g)"
         res="$(
-        $curl -k --header "PRIVATE-TOKEN: $token" "$baseurl/api/v3/user/keys" \
+        $curl -k --header "PRIVATE-TOKEN: $token" "$gitlab_url/api/v3/user/keys" \
             --data-urlencode "title=$label" --data-urlencode "key=$key_data"
         )"
         ;;
@@ -106,3 +101,4 @@ else
     echo "$res"
     exit 1
 fi
+
