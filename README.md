@@ -27,17 +27,17 @@ gitlab <user> [-l|--label <label>] [-p|--path <path>] [-u|--url <gitlab_url>]   
 Example:
 
 ```
-$ ./add-sshkey-remote github ABCanG -l MainPC -p ~/.ssh/id_rsa.pub
+$ ./add-sshkey-remote github abcang -l MainPC -p ~/.ssh/id_rsa.pub
 ```
 
 For GitLab:
 ```
-$ ./add-sshkey-remote gitlab ABCanG --url https://gitlab.mydomain.com
+$ ./add-sshkey-remote gitlab abcang --url https://gitlab.mydomain.com
 ```
 
 Use with curl:
 ```
-$ curl -fsSL https://raw.githubusercontent.com/ABCanG/add-sshkey-remote/master/add-sshkey-remote | bash -s github ABCanG
+$ curl -fsSL https://raw.githubusercontent.com/abcang/add-sshkey-remote/master/add-sshkey-remote | bash -s github abcang
 ```
 
 ## License
