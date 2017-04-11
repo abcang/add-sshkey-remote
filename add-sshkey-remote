@@ -50,7 +50,8 @@ key_data="$(cat $key_path)"
 
 case "$command" in
     ssh)
-        cat <"$key_path" | ssh "$host" "cat >> ~/.ssh/authorized_keys"
+        cat <"$key_path" | ssh "$host" \
+            "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
         exit $?
         ;;
 
